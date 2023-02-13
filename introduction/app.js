@@ -1,26 +1,14 @@
 const { printQueryResults } = require('./utils');
-
+// require the 'sqlite3' package here
 const sqlite3 = require('sqlite3');
 
-const db = new sqlite3.Database('./db.sqlite');
+// open up the SQLite database in './db.sqlite'
+const db = new sqlite3.Database('./test.db');
 
-const getAverageTemperatureForYear = year => {
-  if (!year) {
-    console.log('You must provide a year!');
-    return;
+
+db.all('SELECT * FROM test ORDER BY year', (error, rows) => {
+  if (error) {
+    throw error;
   }
-  db.get('SELECT year, AVG(temp_avg) as average_temperature from TemperatureData WHERE year = $year',
-   { $year: year },
-   (err, row) => {
-    if (err) {
-      throw err;
-    }
-    printQueryResults(row);
-  })
-}
-
-// Call this function with a few years to view the average temperature that year
-// This database has values from 1851 - 2004
-getAverageTemperatureForYear(1914)
-getAverageTemperatureForYear(1939)
-getAverageTemperatureForYear(1977)
+  printQueryResults(rows);
+});
