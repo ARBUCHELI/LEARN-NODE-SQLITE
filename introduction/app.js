@@ -17,5 +17,9 @@ db.all('SELECT * FROM test WHERE year = 1866', (error, rows) => {
   printQueryResults(rows);
 });*/
 
+db.get("SELECT * FROM test WHERE year = 1875", (erro, row) => {
+  printQueryResults(row);
+})
+
 
 
