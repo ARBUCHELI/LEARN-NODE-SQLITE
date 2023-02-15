@@ -29,7 +29,7 @@ db.all('SELECT * FROM test WHERE year = 1866', (error, rows) => {
 const ids = [1, 25, 45, 100, 360, 382];
 // your code below:
 
-ids.map(id => {
+/*ids.map(id => {
   db.get("SELECT * FROM test WHERE id = $id",  {
         $id: id
         },
@@ -37,7 +37,21 @@ ids.map(id => {
       printQueryResults(rows);
     }
 )
-})
+})*/
+
+//Using db.run()
+const newRow = {
+  location: 'Istanbul, Turkey',
+  year: 1976,
+}
+// Your code below!
+
+db.run('INSERT INTO TemperatureData (location, year) VALUES ($location, $year)', {
+  $location: newRow.location,
+  $year: newRow.year
+}, function(error) {
+    console.log(this.lastID)
+});
 
 
 
