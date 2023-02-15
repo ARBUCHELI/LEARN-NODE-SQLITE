@@ -24,6 +24,21 @@ db.all('SELECT * FROM test WHERE year = 1866', (error, rows) => {
   printQueryResults(row);
 })*/
 
+//Using Placeholders
+
+const ids = [1, 25, 45, 100, 360, 382];
+// your code below:
+
+ids.map(id => {
+  db.get("SELECT * FROM test WHERE id = $id",  {
+        $id: id
+        },
+    (error, rows) => {
+      printQueryResults(rows);
+    }
+)
+})
+
 
 
 
