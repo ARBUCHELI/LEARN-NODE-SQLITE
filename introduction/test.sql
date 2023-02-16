@@ -452,10 +452,10 @@ VALUES(366, 'Jakarta Observatory, Indonesia', 1900, 26.358333333333334);
 INSERT INTO test (id, location, year, temp_avg)
 VALUES(598, 'San Francisco, USA', 1900, 12.924999999999999);*/
 
+SELECT *
+FROM test;
 
 
-
-	
 	
 	
 	

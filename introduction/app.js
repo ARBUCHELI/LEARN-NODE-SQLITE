@@ -26,7 +26,7 @@ db.all('SELECT * FROM test WHERE year = 1866', (error, rows) => {
 
 //Using Placeholders
 
-const ids = [1, 25, 45, 100, 360, 382];
+//const ids = [1, 25, 45, 100, 360, 382];
 // your code below:
 
 /*ids.map(id => {
@@ -37,22 +37,39 @@ const ids = [1, 25, 45, 100, 360, 382];
       printQueryResults(rows);
     }
 )
-})*/
+})
 
-//Using db.run()
+Using db.run()
 const newRow = {
   location: 'Istanbul, Turkey',
   year: 1976,
+
 }
 // Your code below!
+//Handling Errors Gracefully
+const newRow = {
+  location: 'Istanbul, Turkey',
+  year: 1976,
+  tempAvg: 13.35,
+  id: 777
+}
 
-db.run('INSERT INTO TemperatureData (location, year) VALUES ($location, $year)', {
+db.run('INSERT INTO test (location, year, temp_avg, id) VALUES ($location, $year, $tempAvg, $id)', {
   $location: newRow.location,
-  $year: newRow.year
+  $year: newRow.year,
+  $tempAvg: newRow.tempAvg,
+  $id: newRow.id
 }, function(error) {
-    console.log(this.lastID)
-});
-
+  // handle errors here!
+  if(error) {
+    console.log(error);
+  };
+    db.get('SELECT * FROM test WHERE id = 777', {
+  },
+  function(error, row){
+    printQueryResults(row);
+  });
+});*/
 
 
 
