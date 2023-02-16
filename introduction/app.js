@@ -1,4 +1,4 @@
-const { printQueryResults } = require('./utils');
+const { printQueryResults, calculateAverages, addClimateRowToObject } = require('./utils');
 // require the 'sqlite3' package here
 const sqlite3 = require('sqlite3');
 
@@ -70,6 +70,30 @@ db.run('INSERT INTO test (location, year, temp_avg, id) VALUES ($location, $year
     printQueryResults(row);
   });
 });*/
+
+//Using db.each()
+const temperaturesByYear = {};
+
+db.run('DROP TABLE IF EXISTS Average', error => {
+  if (error) {
+    throw error;
+  }
+  db.each('SELECT * FROM test',
+    (error, row) => {
+      if (error) {
+        throw error;
+      }
+      addClimateRowToObject(row, temperaturesByYear);
+    }, 
+    error => {
+      if (error) {
+        throw error;
+      }
+      const averageTemperatureByYear = calculateAverages(temperaturesByYear);
+			printQueryResults(averageTemperatureByYear);
+    }
+  );
+});
 
 
 
