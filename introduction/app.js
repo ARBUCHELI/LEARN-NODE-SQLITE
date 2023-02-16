@@ -1,4 +1,4 @@
-const { printQueryResults, calculateAverages, addClimateRowToObject } = require('./utils');
+const { calculateAverages, addClimateRowToObject, logNodeError, printQueryResults } = require('./utils');
 // require the 'sqlite3' package here
 const sqlite3 = require('sqlite3');
 
@@ -72,7 +72,7 @@ db.run('INSERT INTO test (location, year, temp_avg, id) VALUES ($location, $year
 });*/
 
 //Using db.each()
-const temperaturesByYear = {};
+/*const temperaturesByYear = {};
 
 db.run('DROP TABLE IF EXISTS Average', error => {
   if (error) {
@@ -93,7 +93,81 @@ db.run('DROP TABLE IF EXISTS Average', error => {
 			printQueryResults(averageTemperatureByYear);
     }
   );
-});
+});*/
+
+//Creating a new table
+/*const temperaturesByYear = {};
+
+db.run('DROP TABLE IF EXISTS Average', error => {
+  if (error) {
+    throw error;
+  }
+  db.each('SELECT * FROM test',
+    (error, row) => {
+      if (error) {
+        throw error;
+      }
+      addClimateRowToObject(row, temperaturesByYear);
+    }, 
+    error => {
+      if (error) {
+        throw error;
+      }
+      const averageTemperatureByYear = calculateAverages(temperaturesByYear);
+      db.run('CREATE TABLE Average (id INTEGER PRIMARY KEY, year INTEGER NOT NULL, temperature REAL NOT NULL)', logNodeError);
+      averageTemperatureByYear.forEach(row => {
+        db.run('INSERT INTO Average (year, temperature) VALUES ($year, $temp)', {
+					$year: row.year,
+        	$temp: row.temperature
+      	}, err => {
+          if (err) {
+            console.log(err);
+          }
+        });
+      });
+    }
+  );
+});*/
+
+//Serial Queries
+const temperaturesByYear = {};
+
+// start by wrapping all the code below in a serialize method
+db.serialize(() => { 
+  db.run('DROP TABLE IF EXISTS Average', error => {
+    if (error) {
+      throw error;
+    }
+  })
+  db.run('CREATE TABLE Average (id INTEGER PRIMARY KEY, year INTEGER NOT NULL, temperature REAL NOT NULL)', logNodeError);
+  db.each('SELECT * FROM test',
+    (error, row) => {
+      if (error) {
+        throw error;
+      }
+      addClimateRowToObject(row, temperaturesByYear);
+    }, 
+    error => {
+      if (error) {
+        throw error;
+      }
+      const averageTemperatureByYear = calculateAverages(temperaturesByYear);
+      averageTemperatureByYear.forEach(row => {
+        db.run('INSERT INTO Average (year, temperature) VALUES ($year, $temp)', {
+          $year: row.year,
+          $temp: row.temperature
+        }, err => {
+          if (err) {
+            console.log(err);
+          }
+        });
+      });
+    db.all('SELECT * FROM Average',
+    (error, row) => {
+      printQueryResults(row)
+    })
+    });
+  });
 
 
 
